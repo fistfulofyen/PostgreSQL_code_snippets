@@ -188,6 +188,19 @@ VALUES (1,1,1)
 ON CONFLICT (post_id, account_id)
 DO UPDATE SET howmuch = fav.howmuch + 1
 RETURNING *;
+
+BEGIN;
+SELECT howmuch FROM fav WHERE account_id=1 AND post_id=1 FOR UPDATE OF fav;
+-- Time passes...
+UPDATE SET howmuch=999 WHERE account_id=1 AND post_id=1;
+ROLLBACK;
+SELECT howmuch FROM fav WHERE account_id=1 AND post_id=1;
+BEGIN;
+SELECT howmuch FROM fav WHERE account_id=1 AND post_id=1 FOR UPDATE OF fav;
+-- Time passes...
+UPDATE SET howmuch=999 WHERE account_id=1 AND post_id=1;
+COMMIT;
+SELECT howmuch FROM fav WHERE account_id=1 AND post_id=1;
 ```
 
 ## Stored Procedures
@@ -231,6 +244,7 @@ RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
+-- create trigger
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON fav
 FOR EACH ROW
@@ -243,3 +257,24 @@ WHERE post_id = 1 AND account_id = 1;
 
 ## Load CSV
 
+03-Techniques.csv :
+Zap,A
+Zip,A
+One,B
+Two,B
+
+to
+
+discuss=> select * from xy;
+id | x | y_id
+----+-----+------
+1 | Zap | 2
+2 | Zip | 2
+3 | One | 1
+4 | Two | 1
+
+discuss=> select * from y;
+id | y
+----+---
+1 | B
+2 | A
