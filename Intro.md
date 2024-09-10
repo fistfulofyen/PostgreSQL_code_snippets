@@ -52,13 +52,9 @@ CREATE TABLE users (
 - PostgreSQL functions like NOW().
 - Use of indexes, such as B-trees and hashes.
 
-## Summary
-- SQL allows describing data and performing CRUD operations.
-- Operations include Create, Read, Update, and Delete.
+## Generate 1000 Rows with Mockaroo
+https://www.mockaroo.com/
+- Use command \i <file_name> to insert from external sql file
 
----
 
-*Slides by Charles R. Severance (www.drchuck.com) - [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/)*
-```
-
-Feel free to customize the summary or let me know if you have specific preferences.
+  
