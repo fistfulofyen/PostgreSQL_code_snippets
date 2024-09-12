@@ -56,7 +56,16 @@ CREATE TABLE users (
 https://www.mockaroo.com/
 - Use command \i <file_name> to insert from external sql file
 
-## dealing with blank space
+## Dealing with blank space
 ```sql
 SELECT COALESCE(email, 'Email not provided') FROM person;
+```
+
+## Date
+```sql
+SELECT NOW()::DATE - INTERVAL '10 years' AS "10 years ago";
+```
+
+```sql
+SELECT EXTRACT(YEAR FROM NOW())
 ```
