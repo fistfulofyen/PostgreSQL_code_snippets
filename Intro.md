@@ -56,5 +56,7 @@ CREATE TABLE users (
 https://www.mockaroo.com/
 - Use command \i <file_name> to insert from external sql file
 
-
-  
+## dealing with blank space
+```sql
+SELECT COALESCE(email, 'Email not provided') FROM person;
+```
