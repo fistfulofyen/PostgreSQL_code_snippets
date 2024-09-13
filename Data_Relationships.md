@@ -130,9 +130,26 @@ INSERT INTO track (title, rating, len, count, album_id, genre_id)
 
 ```sql
 -- Example: Using JOIN operations
-SELECT album.title, artist.name
-FROM album
-JOIN artist ON album.artist_id = artist.id;
+SELECT album.title, artist.name FROM album JOIN artist 
+    ON album.artist_id = artist.id;
+
+SELECT album.title, album.artist_id, artist.id, artist.name 
+    FROM album INNER JOIN artist ON album.artist_id = artist.id;
+
+SELECT track.title, track.genre_id, genre.id, genre.name 
+    FROM track CROSS JOIN genre;
+
+SELECT track.title, genre.name FROM track JOIN genre 
+    ON track.genre_id = genre.id;
+
+-- Join all table
+SELECT track.title, artist.name, album.title, genre.name 
+FROM track 
+    JOIN genre ON track.genre_id = genre.id 
+    JOIN album ON track.album_id = album.id 
+    JOIN artist ON album.artist_id = artist.id;
+
+DELETE FROM genre WHERE name='Metal';
 ```
 
 ## ON DELETE CASCADE
@@ -153,13 +170,51 @@ CREATE TABLE track (
 - Example of student-course memberships with tables for students, courses, and a membership connection table.
 
 ```sql
--- Example: Creating a many-to-many relationship
+CREATE TABLE student (
+  id SERIAL,
+  name VARCHAR(128),
+  email VARCHAR(128) UNIQUE,
+  PRIMARY KEY(id)
+) ;
+
+CREATE TABLE course (
+  id SERIAL,
+  title VARCHAR(128) UNIQUE,
+  PRIMARY KEY(id)
+) ;
+
+-- We could put 'id SERIAL' in this table, but it is not essential
 CREATE TABLE member (
-  student_id INTEGER REFERENCES student(id) ON DELETE CASCADE,
-  course_id INTEGER REFERENCES course(id) ON DELETE CASCADE,
-  role INTEGER,
-  PRIMARY KEY (student_id, course_id)
-);
+    student_id INTEGER REFERENCES student(id) ON DELETE CASCADE,
+    course_id INTEGER REFERENCES course(id) ON DELETE CASCADE,
+	role        INTEGER,
+    PRIMARY KEY (student_id, course_id)
+) ;
+
+INSERT INTO student (name, email) VALUES ('Jane', 'jane@tsugi.org');
+INSERT INTO student (name, email) VALUES ('Ed', 'ed@tsugi.org');
+INSERT INTO student (name, email) VALUES ('Sue', 'sue@tsugi.org');
+
+INSERT INTO course (title) VALUES ('Python');
+INSERT INTO course (title) VALUES ('SQL');
+INSERT INTO course (title) VALUES ('PHP');
+
+INSERT INTO member (student_id, course_id, role) VALUES (1, 1, 1);
+INSERT INTO member (student_id, course_id, role) VALUES (2, 1, 0);
+INSERT INTO member (student_id, course_id, role) VALUES (3, 1, 0);
+
+INSERT INTO member (student_id, course_id, role) VALUES (1, 2, 0);
+INSERT INTO member (student_id, course_id, role) VALUES (2, 2, 1);
+
+INSERT INTO member (student_id, course_id, role) VALUES (2, 3, 1);
+INSERT INTO member (student_id, course_id, role) VALUES (3, 3, 0);
+
+SELECT student.name, member.role, course.title
+  FROM student 
+  JOIN member ON member.student_id = student.id 
+  JOIN course ON member.course_id = course.id
+  ORDER BY course.title, member.role DESC, student.name;
+
 ```
 
 ## Complexity Enables Speed
@@ -174,5 +229,3 @@ CREATE TABLE member (
 - Slides Copyright 2010- Charles R. Severance, available under a Creative Commons Attribution 4.0 License.
 
 ```
-
-Feel free to modify the code snippets based on your specific needs.
